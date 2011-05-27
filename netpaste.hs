@@ -2,7 +2,9 @@ module Main where
 
 import Network.Curl
 import System.Environment
+import System
 import Control.Monad (forM_)
+import Network.HTTP.Base (urlEncode)
 
 api_dev_key = "ff3d413082c193cbdf2431ab9699e722"
 api_option = "paste"
@@ -23,15 +25,15 @@ main = do
   if files == []
     then do
     code <- getContents
-    result <- publish code
+    result <- publish $ urlEncode code
     case result of
-      Left e -> putStrLn e
+      Left e -> putStrLn e >> exitWith (ExitFailure 1)
       Right url -> putStrLn url
       
     else forM_ files $ \f -> do
     code <- readFile f
-    result <- publish code
+    result <- publish $ urlEncode code
     case result of
-      Left e -> putStrLn e
+      Left e -> putStrLn e >> exitWith (ExitFailure 1)
       Right url -> putStrLn url
       
